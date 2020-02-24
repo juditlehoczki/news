@@ -5,23 +5,6 @@ const {
   formatComments
 } = require("../db/utils/utils");
 
-/*
- {
-    title: 'A',
-    topic: 'mitch',
-    author: 'icellusedkars',
-    body: 'Delicious tin of cat food',
-    created_at: 911564514171,
-  },
-  {
-    title: 'Z',
-    topic: 'mitch',
-    author: 'icellusedkars',
-    body: 'I was hungry.',
-    created_at: 785420514171,
-  }
-*/
-
 describe("formatDates", () => {
   it("returns an empty array when passed an empty array", () => {
     const input = [];
