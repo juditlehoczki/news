@@ -139,4 +139,95 @@ describe("makeRefObj", () => {
   });
 });
 
-describe("formatComments", () => {});
+describe("formatComments", () => {
+  it("formats one comment when passed one comment", () => {
+    const comment = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    const articleRef = {
+      "They're not exactly dogs, are they?": 1
+    };
+    const actual = formatComments(comment, articleRef);
+    expect(actual[0]).to.have.all.keys(
+      "body",
+      "article_id",
+      "author",
+      "votes",
+      "created_at"
+    );
+    expect(actual[0].article_id).to.equal(1);
+    expect(actual[0].created_at).to.deep.equal(new Date(1511354163389));
+  });
+  it("formats multiple comments when passed multiple comments", () => {
+    const comments = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      },
+      {
+        body:
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 14,
+        created_at: 1479818163389
+      }
+    ];
+    const articleRef = {
+      "They're not exactly dogs, are they?": 1
+    };
+    const actual = formatComments(comments, articleRef);
+    expect(actual[0]).to.have.all.keys(
+      "body",
+      "article_id",
+      "author",
+      "votes",
+      "created_at"
+    );
+    expect(actual[0].article_id).to.equal(1);
+    expect(actual[0].created_at).to.deep.equal(new Date(1511354163389));
+  });
+  it("does not mutate the original array of comments", () => {
+    const comments = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: "butter_bridge",
+        votes: 16,
+        created_at: 1511354163389
+      },
+      {
+        body:
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 14,
+        created_at: 1479818163389
+      }
+    ];
+    const articleRef = {
+      "They're not exactly dogs, are they?": 1
+    };
+    formatComments(comments, articleRef);
+    expect(comments[0]).to.deep.equal({
+      body:
+        "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      belongs_to: "They're not exactly dogs, are they?",
+      created_by: "butter_bridge",
+      votes: 16,
+      created_at: 1511354163389
+    });
+  });
+});

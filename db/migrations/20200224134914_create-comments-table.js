@@ -2,8 +2,8 @@ exports.up = function(knex) {
   return knex.schema.createTable("comments", commentsTable => {
     commentsTable.increments("comment_id").primary();
     commentsTable
-      .string("user_username")
-      .references("user_username")
+      .string("author")
+      .references("username")
       .inTable("users")
       .notNullable();
     commentsTable
@@ -11,11 +11,11 @@ exports.up = function(knex) {
       .references("article_id")
       .inTable("articles")
       .notNullable();
-    commentsTable.integer("comment_votes").defaultTo(0);
+    commentsTable.integer("votes").defaultTo(0);
     commentsTable
-      .timestamp("comment_created_at", { useTz: true })
+      .timestamp("created_at", { useTz: true })
       .defaultTo(knex.fn.now());
-    commentsTable.string("comment_body").notNullable();
+    commentsTable.string("body").notNullable();
   });
 };
 
