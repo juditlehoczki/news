@@ -1,6 +1,7 @@
 const {
   fetchArticleById,
-  updateArticleById
+  updateArticleById,
+  addComment
 } = require("../models/articles.models.js");
 
 const getArticleById = (req, res, next) => {
@@ -10,11 +11,15 @@ const getArticleById = (req, res, next) => {
 };
 
 const patchArticleById = (req, res, next) => {
-  // console.log("controller");
-  // console.log(req.params, req.body);
   updateArticleById(req.params, req.body)
     .then(article => res.send({ article }))
     .catch(err => next(err));
 };
 
-module.exports = { getArticleById, patchArticleById };
+const postComment = (req, res, next) => {
+  addComment(req.params, req.body)
+    .then(comment => res.status(201).send({ comment }))
+    .catch(err => next(err));
+};
+
+module.exports = { getArticleById, patchArticleById, postComment };

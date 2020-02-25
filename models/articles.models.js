@@ -41,4 +41,14 @@ const updateArticleById = ({ article_id }, update) => {
   }
 };
 
-module.exports = { fetchArticleById, updateArticleById };
+const addComment = ({ article_id }, { username, body }) => {
+  const updateObj = { article_id, username, body };
+  updateObj.author = username;
+  delete updateObj.username;
+  return connection("comments")
+    .insert(updateObj)
+    .returning("*")
+    .then(commentRows => commentRows[0]);
+};
+
+module.exports = { fetchArticleById, updateArticleById, addComment };

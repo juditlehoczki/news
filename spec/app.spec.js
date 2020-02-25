@@ -145,5 +145,45 @@ describe("Server", () => {
           });
       });
     });
+    describe("/articles/:article_id/comments", () => {
+      it("POST: 201 - responds with the comment object", () => {
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send({ username: "butter_bridge", body: "I don't like bananas." })
+          .expect(201)
+          .then(res => {
+            expect(res.body.comment.body).to.deep.equal(
+              "I don't like bananas."
+            );
+          });
+      });
+      it("POST: 404 - responds with an error message when trying to post to an article that doesn't exist", () => {
+        return request(app)
+          .post("/api/articles/99999/comments")
+          .send({ username: "butter_bridge", body: "I don't like bananas." })
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.equal("Article Or User Not Found.");
+          });
+      });
+      it("POST: 400 - responds with an error message when trying to post to an invalid article_id", () => {
+        return request(app)
+          .post("/api/articles/banana/comments")
+          .send({ username: "butter_bridge", body: "I don't like bananas." })
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.equal("Invalid Data Type.");
+          });
+      });
+      it("POST: 404 - responds with an error message when trying to post with a non-existent username", () => {
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send({ username: "banana", body: "I don't like bananas." })
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.equal("Article Or User Not Found.");
+          });
+      });
+    });
   });
 });
