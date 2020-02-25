@@ -1,8 +1,6 @@
 const connection = require("../db/connection.js");
 
 const fetchArticleById = ({ article_id }) => {
-  //send a query to comments where article_id = article_id
-  //use length of this array as comment_count
   return connection("comments")
     .where({ article_id })
     .then(comments => {
@@ -19,4 +17,28 @@ const fetchArticleById = ({ article_id }) => {
     });
 };
 
-module.exports = { fetchArticleById };
+const updateArticleById = ({ article_id }, update) => {
+  if (update.inc_votes === undefined) {
+    return Promise.reject({ status: 400, msg: "Invalid Data Type." });
+  } else if (Object.keys(update).length !== 1) {
+    return Promise.reject({
+      status: 400,
+      msg: "You Can Only Update Votes."
+    });
+  } else {
+    return connection("articles")
+      .where({ article_id })
+      .select("votes")
+      .then(currentVoteValue => {
+        return connection("articles")
+          .where({ article_id })
+          .update({ votes: currentVoteValue[0].votes + update.inc_votes })
+          .returning("*")
+          .then(articleRows => {
+            return articleRows[0];
+          });
+      });
+  }
+};
+
+module.exports = { fetchArticleById, updateArticleById };

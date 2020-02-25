@@ -99,6 +99,51 @@ describe("Server", () => {
             expect(res.body.msg).to.equal("Invalid Data Type.");
           });
       });
+      it("PATCH: 200 - responds with the updated article object when votes count is increased", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({ inc_votes: 1 })
+          .expect(200)
+          .then(res => {
+            expect(res.body.article.votes).to.equal(101);
+          });
+      });
+      it("PATCH: 200 - responds with the updated article object when votes count is decreased", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({ inc_votes: -50 })
+          .expect(200)
+          .then(res => {
+            expect(res.body.article.votes).to.equal(50);
+          });
+      });
+      it("PATCH: 400 - responds with an error message when trying to patch without an inc_votes key", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({ banana: -50 })
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.equal("Invalid Data Type.");
+          });
+      });
+      it("PATCH: 400 - responds with an error message when trying to patch with anything but an integer as the value of inc_votes", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({ inc_votes: "banana" })
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.equal("Invalid Data Type.");
+          });
+      });
+      it("PATCH: ", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({ inc_votes: 1, name: "Banana" })
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.equal("You Can Only Update Votes.");
+          });
+      });
     });
   });
 });
