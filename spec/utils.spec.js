@@ -91,7 +91,7 @@ describe("makeRefObj", () => {
         votes: 100
       }
     ];
-    const actual = makeRefObj(input, "title", "article_id");
+    const actual = makeRefObj(input);
     expect(actual).to.deep.equal({ "Living in the shadow of a great man": 1 });
   });
   it("returns an object with multiple keys if passed an array with multiple objects", () => {
@@ -114,7 +114,7 @@ describe("makeRefObj", () => {
         created_at: 1289996514171
       }
     ];
-    const actual = makeRefObj(input, "title", "article_id");
+    const actual = makeRefObj(input);
     expect(actual).to.deep.equal({
       "Living in the shadow of a great man": 1,
       "Eight pug gifs that remind me of mitch": 2

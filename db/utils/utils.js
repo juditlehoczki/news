@@ -1,22 +1,30 @@
+// to-do: refactor with .map
 exports.formatDates = list => {
-  const formattedObjs = [];
-  list.forEach(obj => {
-    formattedObjs.push({ ...obj });
+  // const formattedObjs = [];
+  // list.forEach(obj => {
+  //   formattedObjs.push({ ...obj });
+  // });
+  // formattedObjs.forEach(obj => {
+  //   obj.created_at = new Date(obj.created_at);
+  // });
+  // return formattedObjs;
+  return list.map(item => {
+    return {
+      ...item,
+      created_at: new Date(item.created_at)
+    };
   });
-  formattedObjs.forEach(obj => {
-    obj.created_at = new Date(obj.created_at);
-  });
-  return formattedObjs;
 };
 
-exports.makeRefObj = (list, key, value) => {
+exports.makeRefObj = list => {
   const newObj = {};
   list.forEach(obj => {
-    newObj[obj[key]] = obj[value];
+    newObj[obj.title] = obj.article_id;
   });
   return newObj;
 };
 
+// to-do: refactor with .map
 exports.formatComments = (comments, articleRef) => {
   const formattedComments = [];
   comments.forEach(comment => {
