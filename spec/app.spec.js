@@ -400,7 +400,7 @@ describe("Server", () => {
           });
       });
     });
-    describe.only("/comments/:comment_id", () => {
+    describe("/comments/:comment_id", () => {
       it("PATCH: 200 - responds with an updated comment", () => {
         return request(app)
           .patch("/api/comments/1")

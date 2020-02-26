@@ -1,4 +1,5 @@
 const articlesRouter = require("express").Router();
+const { handle405Errors, handleWrongRoute } = require("../errors/index.js");
 const {
   getArticleById,
   patchArticleById,
@@ -12,11 +13,13 @@ articlesRouter.route("/").get(getArticles);
 articlesRouter
   .route("/:article_id")
   .get(getArticleById)
-  .patch(patchArticleById);
+  .patch(patchArticleById)
+  .all(handle405Errors);
 
 articlesRouter
   .route("/:article_id/comments")
   .post(postComment)
-  .get(getCommentsByArticleId);
+  .get(getCommentsByArticleId)
+  .all(handle405Errors);
 
 module.exports = articlesRouter;

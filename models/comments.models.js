@@ -10,12 +10,9 @@ const updateCommentById = ({ comment_id }, { inc_votes }) => {
 };
 
 const removeCommentById = ({ comment_id }) => {
-  console.log("hello>>>>");
   return connection("comments")
     .where("comment_id", comment_id)
     .del();
-  // .returning("*")
-  // .then(console.log);
 };
 
 module.exports = { updateCommentById, removeCommentById };
