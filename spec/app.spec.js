@@ -410,6 +410,11 @@ describe("Server", () => {
             expect(res.body.comment.votes).to.equal(17);
           });
       });
+      it("DELETE: 204 - responds with a 204 when deleting comment by ID", () => {
+        return request(app)
+          .delete("/api/comments/1")
+          .expect(204);
+      });
     });
   });
 });
