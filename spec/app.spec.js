@@ -285,6 +285,56 @@ describe("Server", () => {
             });
           });
       });
+      it("GET: 200 - responds with an array of articles sorted by created_at in descending order by default", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles).to.be.sortedBy("created_at", {
+              descending: true
+            });
+          });
+      });
+      it("GET: 200 - responds with an array of articles sorted by requested column", () => {
+        return request(app)
+          .get("/api/articles?sort_by=author")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles).to.be.sortedBy("author", {
+              descending: true
+            });
+          });
+      });
+      it("GET: 200 - responds with an array of articles sorted by requested column in requested order", () => {
+        return request(app)
+          .get("/api/articles?sort_by=author&order=asc")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles).to.be.sortedBy("author", {
+              descending: false
+            });
+          });
+      });
+      it("GET: 200 - responds with an array of articles filtered by author if provided an author", () => {
+        return request(app)
+          .get("/api/articles?author=butter_bridge")
+          .expect(200)
+          .then(res => {
+            res.body.articles.forEach(article => {
+              expect(article.author).to.equal("butter_bridge");
+            });
+          });
+      });
+      it("GET: 200 - responds with an array of articles filtered by topic if provided a topic", () => {
+        return request(app)
+          .get("/api/articles?topic=mitch")
+          .expect(200)
+          .then(res => {
+            res.body.articles.forEach(article => {
+              expect(article.topic).to.equal("mitch");
+            });
+          });
+      });
     });
   });
 });
