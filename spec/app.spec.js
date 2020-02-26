@@ -335,6 +335,60 @@ describe("Server", () => {
             });
           });
       });
+      it("GET: 400 - returns an error message when trying to sort by a column that doesn't exist", () => {
+        return request(app)
+          .get("/api/articles?sort_by=banana")
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.equal("Invalid Column.");
+          });
+      });
+      it("GET: 400 - returns an error message when trying to order by anything else but asc or desc", () => {
+        return request(app)
+          .get("/api/articles?order=banana")
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.equal(
+              'Trying To Sort By "banana" Is Not Valid.'
+            );
+          });
+      });
+      //400 trying to filter by a non-existent author -> maybe should be querying the users table to check whether user exists?
+      it("GET: 404 - returns an error message when trying to filter by a non-existent author", () => {
+        return request(app)
+          .get("/api/articles?author=banana")
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.equal("No Articles Found.");
+          });
+      });
+      //404 trying to filter by a valid author that has no articles
+      it("GET: 404 - returns an error message when trying to filter by a valid author that has no articles", () => {
+        return request(app)
+          .get("/api/articles?author=lurker")
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.equal("No Articles Found.");
+          });
+      });
+      //404 trying to filter by a non-existent topic
+      it("GET: 404 - returns an error message when trying to filter by a non-existent topic", () => {
+        return request(app)
+          .get("/api/articles?topic=banana")
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.equal("No Articles Found.");
+          });
+      });
+      //404 trying to filter by a valid topic that has no articles
+      it("GET: 404 - returns an error message when trying to filter by a valid topic that has no articles", () => {
+        return request(app)
+          .get("/api/articles?topic=paper")
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.equal("No Articles Found.");
+          });
+      });
     });
   });
 });

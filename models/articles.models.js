@@ -94,28 +94,42 @@ const fetchCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
 };
 
 const fetchArticles = ({ sort_by, order, author, topic }) => {
-  return connection
-    .select(
-      "articles.article_id",
-      "articles.title",
-      "articles.votes",
-      "articles.topic",
-      "articles.author",
-      "articles.created_at"
-    )
-    .from("articles")
-    .leftJoin("comments", "articles.article_id", "=", "comments.article_id")
-    .groupBy("articles.article_id")
-    .count({ comment_count: "comments.article_id" })
-    .orderBy(sort_by || "created_at", order || "desc")
-    .modify(queryBuilder => {
-      if (author === undefined) queryBuilder;
-      else queryBuilder.where("articles.author", author);
-    })
-    .modify(queryBuilder => {
-      if (topic === undefined) queryBuilder;
-      else queryBuilder.where("articles.topic", topic);
+  if (order === "asc" || order === "desc" || order === undefined) {
+    return connection
+      .select(
+        "articles.article_id",
+        "articles.title",
+        "articles.votes",
+        "articles.topic",
+        "articles.author",
+        "articles.created_at"
+      )
+      .from("articles")
+      .leftJoin("comments", "articles.article_id", "=", "comments.article_id")
+      .groupBy("articles.article_id")
+      .count({ comment_count: "comments.article_id" })
+      .orderBy(sort_by || "created_at", order || "desc")
+      .modify(queryBuilder => {
+        if (author === undefined) queryBuilder;
+        else queryBuilder.where("articles.author", author);
+      })
+      .modify(queryBuilder => {
+        if (topic === undefined) queryBuilder;
+        else queryBuilder.where("articles.topic", topic);
+      })
+      .then(articleRows => {
+        if (articleRows.length === 0) {
+          return Promise.reject({ status: 404, msg: "No Articles Found." });
+        } else {
+          return articleRows;
+        }
+      });
+  } else {
+    return Promise.reject({
+      status: 400,
+      msg: `Trying To Sort By "${order}" Is Not Valid.`
     });
+  }
 };
 
 module.exports = {
