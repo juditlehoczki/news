@@ -231,6 +231,40 @@ describe("Server", () => {
             });
           });
       });
+      it("GET: 400 - responds with an error message when trying to sort by a non-existent column", () => {
+        return request(app)
+          .get("/api/articles/1/comments?sort_by=banana")
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.equal("Invalid Column.");
+          });
+      });
+      it("GET: 400 - responds with an error message when using anything else but desc or asc to order", () => {
+        return request(app)
+          .get("/api/articles/1/comments?order=banana")
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.equal(
+              'Trying To Sort By "banana" Is Not Valid.'
+            );
+          });
+      });
+      it("GET: 400 - responds with an error message when trying to get comments by an invalid article ID", () => {
+        return request(app)
+          .get("/api/articles/banana/comments")
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.equal("Invalid Data Type.");
+          });
+      });
+      it("GET: 404 - responds with an error message when no comments found", () => {
+        return request(app)
+          .get("/api/articles/99999/comments")
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.equal("No Comments Found.");
+          });
+      });
     });
   });
 });

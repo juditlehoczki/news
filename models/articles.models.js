@@ -53,10 +53,24 @@ const addComment = ({ article_id }, { username, body }) => {
 };
 
 const fetchCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
-  return connection("comments")
-    .where({ article_id })
-    .select("comment_id", "votes", "created_at", "author", "body")
-    .orderBy(sort_by || "created_at", order || "asc");
+  if (order === "asc" || order === "desc" || order === undefined) {
+    return connection("comments")
+      .where({ article_id })
+      .select("comment_id", "votes", "created_at", "author", "body")
+      .orderBy(sort_by || "created_at", order || "asc")
+      .then(commentsRows => {
+        if (commentsRows.length === 0) {
+          return Promise.reject({ status: 404, msg: "No Comments Found." });
+        } else {
+          return commentsRows;
+        }
+      });
+  } else {
+    return Promise.reject({
+      status: 400,
+      msg: `Trying To Sort By "${order}" Is Not Valid.`
+    });
+  }
 };
 
 module.exports = {
