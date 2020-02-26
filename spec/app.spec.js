@@ -14,7 +14,7 @@ describe("Server", () => {
   beforeEach(() => {
     return connection.seed.run();
   });
-  describe("/", () => {
+  describe("/*", () => {
     it("GET: 404 - responds with an error message when trying to use a path that doesn't exist", () => {
       return request(app)
         .get("/banana")
@@ -25,6 +25,16 @@ describe("Server", () => {
     });
   });
   describe("/api", () => {
+    describe("/teapot", () => {
+      it("GET: 418 - responds with an error message", () => {
+        return request(app)
+          .get("/api/teapot")
+          .expect(418)
+          .then(res => {
+            expect(res.body.msg).to.equal("You're a teapot.");
+          });
+      });
+    });
     describe("/topics", () => {
       it("GET: 200 - responds with an array of topics", () => {
         return request(app)
@@ -266,7 +276,7 @@ describe("Server", () => {
           });
       });
     });
-    describe.only("/articles", () => {
+    describe("/articles", () => {
       it("GET: 200 - responds with an array of articles", () => {
         return request(app)
           .get("/api/articles")
@@ -387,6 +397,17 @@ describe("Server", () => {
           .expect(404)
           .then(res => {
             expect(res.body.msg).to.equal("No Articles Found.");
+          });
+      });
+    });
+    describe.only("/comments/:comment_id", () => {
+      it("PATCH: 200 - responds with an updated comment", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ inc_votes: 1 })
+          .expect(200)
+          .then(res => {
+            expect(res.body.comment.votes).to.equal(17);
           });
       });
     });

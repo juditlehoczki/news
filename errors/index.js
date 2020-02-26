@@ -32,10 +32,16 @@ const handle405Errors = (req, res, next) => {
   res.status(405).send({ msg: "Method Not Allowed." });
 };
 
+const teaPot = (req, res, next) => {
+  console.log("I'm a teapot.");
+  res.status(418).send({ msg: "You're a teapot." });
+};
+
 module.exports = {
   handlePSQLErrors,
   handleCustomErrors,
   handle500Errors,
   handleWrongRoute,
-  handle405Errors
+  handle405Errors,
+  teaPot
 };
