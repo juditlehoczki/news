@@ -83,7 +83,7 @@ describe("Server", () => {
               "comment_count"
             );
             expect(res.body.article.article_id).to.equal(1);
-            expect(res.body.article.comment_count).to.equal(13);
+            expect(res.body.article.comment_count).to.equal("13");
           });
       });
       it("GET: 404 - responds with an error message when trying to get an article by an article_id that doesn't exist", () => {
@@ -263,6 +263,26 @@ describe("Server", () => {
           .expect(404)
           .then(res => {
             expect(res.body.msg).to.equal("No Comments Found.");
+          });
+      });
+    });
+    describe.only("/articles", () => {
+      it("GET: 200 - responds with an array of articles", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(res => {
+            res.body.articles.forEach(article => {
+              expect(article).to.have.all.keys(
+                "article_id",
+                "title",
+                "votes",
+                "topic",
+                "author",
+                "created_at",
+                "comment_count"
+              );
+            });
           });
       });
     });

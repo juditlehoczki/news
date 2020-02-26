@@ -1,20 +1,40 @@
 const connection = require("../db/connection.js");
 
+// const fetchArticleById = ({ article_id }) => {
+//   return connection("comments")
+//     .where({ article_id })
+//     .select("comment_id")
+//     .then(comments => {
+//       return connection("articles")
+//         .where({ article_id })
+//         .select("*")
+//         .then(articleRows => {
+//           if (articleRows.length === 0) {
+//             return Promise.reject({ status: 404, msg: "Article Not Found." });
+//           } else {
+//             return { ...articleRows[0], comment_count: comments.length };
+//           }
+//         });
+//     });
+// };
+
+//reconstructed:
 const fetchArticleById = ({ article_id }) => {
-  return connection("comments")
-    .where({ article_id })
-    .select("comment_id")
-    .then(comments => {
-      return connection("articles")
-        .where({ article_id })
-        .select("*")
-        .then(articleRows => {
-          if (articleRows.length === 0) {
-            return Promise.reject({ status: 404, msg: "Article Not Found." });
-          } else {
-            return { ...articleRows[0], comment_count: comments.length };
-          }
-        });
+  return connection
+    .select("articles.*")
+    .from("articles")
+    .leftJoin("comments", "articles.article_id", "=", "comments.article_id")
+    .groupBy("articles.article_id")
+    .count({ comment_count: "comments.article_id" })
+    .modify(queryBuilder => {
+      return queryBuilder.where("articles.article_id", article_id);
+    })
+    .then(articleRows => {
+      if (articleRows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Article Not Found." });
+      } else {
+        return articleRows[0];
+      }
     });
 };
 
@@ -73,9 +93,26 @@ const fetchCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
   }
 };
 
+const fetchArticles = () => {
+  return connection
+    .select(
+      "articles.article_id",
+      "articles.title",
+      "articles.votes",
+      "articles.topic",
+      "articles.author",
+      "articles.created_at"
+    )
+    .from("articles")
+    .leftJoin("comments", "articles.article_id", "=", "comments.article_id")
+    .groupBy("articles.article_id")
+    .count({ comment_count: "comments.article_id" });
+};
+
 module.exports = {
   fetchArticleById,
   updateArticleById,
   addComment,
-  fetchCommentsByArticleId
+  fetchCommentsByArticleId,
+  fetchArticles
 };

@@ -2,7 +2,8 @@ const {
   fetchArticleById,
   updateArticleById,
   addComment,
-  fetchCommentsByArticleId
+  fetchCommentsByArticleId,
+  fetchArticles
 } = require("../models/articles.models.js");
 
 const getArticleById = (req, res, next) => {
@@ -29,9 +30,16 @@ const getCommentsByArticleId = (req, res, next) => {
     .catch(err => next(err));
 };
 
+const getArticles = (req, res, next) => {
+  fetchArticles()
+    .then(articles => res.send({ articles }))
+    .catch(err => next(err));
+};
+
 module.exports = {
   getArticleById,
   patchArticleById,
   postComment,
-  getCommentsByArticleId
+  getCommentsByArticleId,
+  getArticles
 };
