@@ -3,6 +3,7 @@ const connection = require("../db/connection.js");
 const fetchArticleById = ({ article_id }) => {
   return connection("comments")
     .where({ article_id })
+    .select("comment_id")
     .then(comments => {
       return connection("articles")
         .where({ article_id })
@@ -51,4 +52,16 @@ const addComment = ({ article_id }, { username, body }) => {
     .then(commentRows => commentRows[0]);
 };
 
-module.exports = { fetchArticleById, updateArticleById, addComment };
+const fetchCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
+  return connection("comments")
+    .where({ article_id })
+    .select("comment_id", "votes", "created_at", "author", "body")
+    .orderBy(sort_by || "created_at", order || "asc");
+};
+
+module.exports = {
+  fetchArticleById,
+  updateArticleById,
+  addComment,
+  fetchCommentsByArticleId
+};

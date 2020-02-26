@@ -1,5 +1,8 @@
 process.env.NODE_ENV = "test";
-const { expect } = require("chai");
+const chai = require("chai");
+const expect = chai.expect;
+const chaiSorted = require("sams-chai-sorted");
+chai.use(chaiSorted);
 const request = require("supertest");
 const connection = require("../db/connection.js");
 const app = require("../app.js");
@@ -182,6 +185,50 @@ describe("Server", () => {
           .expect(404)
           .then(res => {
             expect(res.body.msg).to.equal("Article Or User Not Found.");
+          });
+      });
+      it("GET: 200 - responds with an array of comments", () => {
+        return request(app)
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments.length).to.equal(13);
+          });
+      });
+      it("GET: 200 - responds with an array of comments sorted by created_at by default", () => {
+        return request(app)
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments).to.be.sortedBy("created_at");
+          });
+      });
+      it("GET: 200 - responds with an array of comments sorted by requested column", () => {
+        return request(app)
+          .get("/api/articles/1/comments?sort_by=votes")
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments).to.be.sortedBy("votes");
+          });
+      });
+      it("GET: 200 - responds with an array of comments sorted by requested column in descending order if requested", () => {
+        return request(app)
+          .get("/api/articles/1/comments?sort_by=comment_id&order=desc")
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments).to.be.sortedBy("comment_id", {
+              descending: true
+            });
+          });
+      });
+      it("GET: 200 - responds with an array of comments sorted by requested column in ascending order if order not requested", () => {
+        return request(app)
+          .get("/api/articles/1/comments?sort_by=comment_id")
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments).to.be.sortedBy("comment_id", {
+              descending: false
+            });
           });
       });
     });
