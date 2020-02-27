@@ -24,6 +24,7 @@ describe("Server", () => {
         });
     });
   });
+
   describe("/api", () => {
     describe("/teapot", () => {
       it("GET: 418 - responds with an error message", () => {
@@ -34,6 +35,14 @@ describe("Server", () => {
             expect(res.body.msg).to.equal("You're a teapot.");
           });
       });
+    });
+    it("DELETE: 405 - responds with an error message when using an unauthorised method", () => {
+      return request(app)
+        .delete("/api")
+        .expect(405)
+        .then(res => {
+          expect(res.body.msg).to.equal("Method Not Allowed.");
+        });
     });
     describe("/topics", () => {
       it("GET: 200 - responds with an array of topics", () => {
@@ -52,7 +61,17 @@ describe("Server", () => {
             expect(res.body.msg).to.equal("Route Not Found.");
           });
       });
+      it("POST: 405 - responds with an error message when using an unauthorised method", () => {
+        return request(app)
+          .post("/api/topics")
+          .send({ test: "test" })
+          .expect(405)
+          .then(res => {
+            expect(res.body.msg).to.equal("Method Not Allowed.");
+          });
+      });
     });
+
     describe("/users/:username", () => {
       it("GET: 200 - responds with a user object", () => {
         return request(app)
@@ -75,7 +94,17 @@ describe("Server", () => {
             expect(res.body.msg).to.equal("User Not Found.");
           });
       });
+      it("PUT: 405 - responds with an error message when using an unauthorised method", () => {
+        return request(app)
+          .put("/api/users/butter_bridge")
+          .send({ test: "test" })
+          .expect(405)
+          .then(res => {
+            expect(res.body.msg).to.equal("Method Not Allowed.");
+          });
+      });
     });
+
     describe("/articles/:article_id", () => {
       it("GET: 200 - responds with an article object", () => {
         return request(app)
@@ -158,6 +187,7 @@ describe("Server", () => {
           });
       });
     });
+
     describe("/articles/:article_id/comments", () => {
       it("POST: 201 - responds with the comment object", () => {
         return request(app)
@@ -205,12 +235,14 @@ describe("Server", () => {
             expect(res.body.comments.length).to.equal(13);
           });
       });
-      it("GET: 200 - responds with an array of comments sorted by created_at by default", () => {
+      it("GET: 200 - responds with an array of comments sorted by created_at in descending order by default", () => {
         return request(app)
           .get("/api/articles/1/comments")
           .expect(200)
           .then(res => {
-            expect(res.body.comments).to.be.sortedBy("created_at");
+            expect(res.body.comments).to.be.sortedBy("created_at", {
+              descending: true
+            });
           });
       });
       it("GET: 200 - responds with an array of comments sorted by requested column", () => {
@@ -218,26 +250,28 @@ describe("Server", () => {
           .get("/api/articles/1/comments?sort_by=votes")
           .expect(200)
           .then(res => {
-            expect(res.body.comments).to.be.sortedBy("votes");
-          });
-      });
-      it("GET: 200 - responds with an array of comments sorted by requested column in descending order if requested", () => {
-        return request(app)
-          .get("/api/articles/1/comments?sort_by=comment_id&order=desc")
-          .expect(200)
-          .then(res => {
-            expect(res.body.comments).to.be.sortedBy("comment_id", {
+            expect(res.body.comments).to.be.sortedBy("votes", {
               descending: true
             });
           });
       });
-      it("GET: 200 - responds with an array of comments sorted by requested column in ascending order if order not requested", () => {
+      it("GET: 200 - responds with an array of comments sorted by requested column in ascending order if requested", () => {
+        return request(app)
+          .get("/api/articles/1/comments?sort_by=comment_id&order=asc")
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments).to.be.sortedBy("comment_id", {
+              descending: false
+            });
+          });
+      });
+      it("GET: 200 - responds with an array of comments sorted by requested column in descending order if order not requested", () => {
         return request(app)
           .get("/api/articles/1/comments?sort_by=comment_id")
           .expect(200)
           .then(res => {
             expect(res.body.comments).to.be.sortedBy("comment_id", {
-              descending: false
+              descending: true
             });
           });
       });
@@ -276,6 +310,7 @@ describe("Server", () => {
           });
       });
     });
+
     describe("/articles", () => {
       it("GET: 200 - responds with an array of articles", () => {
         return request(app)
@@ -369,16 +404,16 @@ describe("Server", () => {
           .get("/api/articles?author=banana")
           .expect(404)
           .then(res => {
-            expect(res.body.msg).to.equal("No Articles Found.");
+            expect(res.body.msg).to.equal("User doesn't exist.");
           });
       });
       //404 trying to filter by a valid author that has no articles
-      it("GET: 404 - returns an error message when trying to filter by a valid author that has no articles", () => {
+      it("GET: 200 - returns an error message when trying to filter by a valid author that has no articles", () => {
         return request(app)
           .get("/api/articles?author=lurker")
-          .expect(404)
+          .expect(200)
           .then(res => {
-            expect(res.body.msg).to.equal("No Articles Found.");
+            expect(res.body.articles).to.deep.equal([]);
           });
       });
       //404 trying to filter by a non-existent topic
@@ -399,8 +434,18 @@ describe("Server", () => {
             expect(res.body.msg).to.equal("No Articles Found.");
           });
       });
+      it("PATCH: 405 - responds with an error message when using an unauthorised method", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({ test: "test" })
+          .expect(405)
+          .then(res => {
+            expect(res.body.msg).to.equal("Method Not Allowed.");
+          });
+      });
     });
-    describe("/comments/:comment_id", () => {
+
+    describe.only("/comments/:comment_id", () => {
       it("PATCH: 200 - responds with an updated comment", () => {
         return request(app)
           .patch("/api/comments/1")
@@ -410,10 +455,36 @@ describe("Server", () => {
             expect(res.body.comment.votes).to.equal(17);
           });
       });
+      it("PATCH: 404 - responds with a 404 when trying to patch a non-existent comment", () => {
+        return request(app)
+          .patch("/api/comments/99999")
+          .send({ inc_votes: 1 })
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.equal("Comment Not Found.");
+          });
+      });
       it("DELETE: 204 - responds with a 204 when deleting comment by ID", () => {
         return request(app)
           .delete("/api/comments/1")
           .expect(204);
+      });
+      it("DELETE: 404 - responds with a 404 when trying to delete a non-existent comment", () => {
+        return request(app)
+          .delete("/api/comments/99999")
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.equal("Comment Not Found.");
+          });
+      });
+      it("PUT: 405 - responds with an error message when using an unauthorised method", () => {
+        return request(app)
+          .put("/api/comments/1")
+          .send({ test: "test" })
+          .expect(405)
+          .then(res => {
+            expect(res.body.msg).to.equal("Method Not Allowed.");
+          });
       });
     });
   });
