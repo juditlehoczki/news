@@ -1,8 +1,12 @@
 const usersRouter = require("express").Router();
 const { getUserByUsername } = require("../controllers/users.controllers.js");
-const { handleWrongRoute } = require("../errors/index.js");
+const { handle405Errors, handleWrongRoute } = require("../errors/index.js");
 
-usersRouter.use("/:username", getUserByUsername);
+usersRouter
+  .route("/:username")
+  .get(getUserByUsername)
+  .all(handle405Errors);
+
 usersRouter.use("/*", handleWrongRoute);
 
 module.exports = usersRouter;
