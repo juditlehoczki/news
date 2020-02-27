@@ -28,13 +28,20 @@ const removeCommentById = ({ comment_id }) => {
 };
 
 const addComment = ({ article_id }, { username, body }) => {
-  const updateObj = { article_id, username, body };
-  updateObj.author = username;
-  delete updateObj.username;
-  return connection("comments")
-    .insert(updateObj)
-    .returning("*")
-    .then(commentRows => commentRows[0]);
+  if (username === undefined || body === undefined) {
+    return Promise.reject({
+      status: 400,
+      msg: "Username Or Comment is Missing."
+    });
+  } else {
+    const updateObj = { article_id, username, body };
+    updateObj.author = username;
+    delete updateObj.username;
+    return connection("comments")
+      .insert(updateObj)
+      .returning("*")
+      .then(commentRows => commentRows[0]);
+  }
 };
 
 const fetchCommentsByArticleId = ({ article_id }, { sort_by, order }) => {

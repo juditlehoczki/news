@@ -114,7 +114,7 @@ describe("Server", () => {
       });
     });
 
-    describe.only("/articles/:article_id", () => {
+    describe("/articles/:article_id", () => {
       it("GET: 200 - responds with an article object", () => {
         return request(app)
           .get("/api/articles/1")
@@ -225,6 +225,15 @@ describe("Server", () => {
           .expect(400)
           .then(res => {
             expect(res.body.msg).to.equal("Invalid Data Type.");
+          });
+      });
+      it("POST: 400 - responds with an error message when request does not include all the required keys", () => {
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send({ body: "I don't like bananas." })
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.equal("Username Or Comment is Missing.");
           });
       });
       it("POST: 404 - responds with an error message when trying to post with a non-existent username", () => {
