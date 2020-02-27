@@ -235,6 +235,14 @@ describe("Server", () => {
             expect(res.body.comments.length).to.equal(13);
           });
       });
+      it("GET: 200 - responds with an empty array if the article exists but has no comments", () => {
+        return request(app)
+          .get("/api/articles/2/comments")
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments.length).to.equal(0);
+          });
+      });
       it("GET: 200 - responds with an array of comments sorted by created_at in descending order by default", () => {
         return request(app)
           .get("/api/articles/1/comments")
@@ -301,17 +309,17 @@ describe("Server", () => {
             expect(res.body.msg).to.equal("Invalid Data Type.");
           });
       });
-      it("GET: 404 - responds with an error message when no comments found", () => {
+      it("GET: 404 - responds with an error message when article doesn't exist", () => {
         return request(app)
           .get("/api/articles/99999/comments")
           .expect(404)
           .then(res => {
-            expect(res.body.msg).to.equal("No Comments Found.");
+            expect(res.body.msg).to.equal("Article Doesn't Exist.");
           });
       });
     });
 
-    describe.only("/articles", () => {
+    describe("/articles", () => {
       it("GET: 200 - responds with an array of articles", () => {
         return request(app)
           .get("/api/articles")

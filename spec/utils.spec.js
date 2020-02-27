@@ -220,7 +220,6 @@ describe("formatComments", () => {
 });
 
 // Util functions used in models
-
 describe("doesItExist", () => {
   it("returns 0 if required value doesn't exist in required table", () => {
     doesItExist("banana", "slug", "topics").then(res => {

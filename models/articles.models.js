@@ -1,5 +1,4 @@
 const connection = require("../db/connection.js");
-const doesItExist = require("../db/utils/utils.js");
 
 const fetchArticleById = ({ article_id }) => {
   return connection
