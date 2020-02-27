@@ -453,7 +453,7 @@ describe("Server", () => {
       });
     });
 
-    describe("/comments/:comment_id", () => {
+    describe.only("/comments/:comment_id", () => {
       it("PATCH: 200 - responds with an updated comment", () => {
         return request(app)
           .patch("/api/comments/1")
@@ -461,6 +461,15 @@ describe("Server", () => {
           .expect(200)
           .then(res => {
             expect(res.body.comment.votes).to.equal(17);
+          });
+      });
+      it("PATCH: 200 - responds with th original comment when not passed inv_votes", () => {
+        return request(app)
+          .patch("/api/comments/3")
+          .send({})
+          .expect(200)
+          .then(res => {
+            expect(res.body.comment.votes).to.equal(100);
           });
       });
       it("PATCH: 404 - responds with a 404 when trying to patch a non-existent comment", () => {
