@@ -222,23 +222,26 @@ describe("formatComments", () => {
 
 // Util functions used in models
 describe("checkIfExists", () => {
+  after(() => {
+    return connection.destroy();
+  });
   it("returns 0 if required value doesn't exist in required table", () => {
-    checkIfExists("banana", "slug", "topics").then(res => {
+    return checkIfExists("banana", "slug", "topics").then(res => {
       expect(res).to.equal(0);
     });
   });
   it("returns 1 if required value does exist in required table", () => {
-    checkIfExists("mitch", "slug", "topics").then(res => {
+    return checkIfExists("mitch", "slug", "topics").then(res => {
       expect(res).to.equal(1);
     });
   });
   it("returns an error message when passed a non-existent column in table", () => {
-    checkIfExists("mitch", "banana", "topics").then(res => {
+    return checkIfExists("mitch", "banana", "topics").then(res => {
       expect(res).to.equal("Column Doesn't Exist.");
     });
   });
   it("returns an error message when passed a non-existent table", () => {
-    checkIfExists("mitch", "slug", "banana").then(res => {
+    return checkIfExists("mitch", "slug", "banana").then(res => {
       expect(res).to.equal("Table Doesn't Exist.");
     });
   });
