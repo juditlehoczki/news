@@ -8,7 +8,10 @@ const {
   getArticles
 } = require("../controllers/articles.controller.js");
 
-articlesRouter.route("/").get(getArticles);
+articlesRouter
+  .route("/")
+  .get(getArticles)
+  .all(handle405Errors);
 
 articlesRouter
   .route("/:article_id")
@@ -21,5 +24,7 @@ articlesRouter
   .post(postComment)
   .get(getCommentsByArticleId)
   .all(handle405Errors);
+
+articlesRouter.route("/*", handleWrongRoute);
 
 module.exports = articlesRouter;
