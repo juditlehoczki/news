@@ -41,7 +41,7 @@ const fetchCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
   if (order !== "asc" && order !== "desc" && order !== undefined) {
     return Promise.reject({
       status: 400,
-      msg: `Trying To Sort By "${order}" Is Not Valid.`
+      msg: `Trying To Order By "${order}" Is Not Valid.`
     });
   } else {
     return connection("comments")
