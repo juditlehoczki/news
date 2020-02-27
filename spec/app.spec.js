@@ -26,6 +26,15 @@ describe("Server", () => {
   });
 
   describe("/api", () => {
+    it("GET: 200 - responds with a JSON describing all the available endpoints on the API", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then(res => {
+          expect(res.body.description).to.be.an("object");
+          expect(res.body.description).to.have.any.keys("GET /api");
+        });
+    });
     describe("/teapot", () => {
       it("GET: 418 - responds with an error message", () => {
         return request(app)
@@ -319,7 +328,7 @@ describe("Server", () => {
       });
     });
 
-    describe.only("/articles", () => {
+    describe("/articles", () => {
       it("GET: 200 - responds with an array of articles", () => {
         return request(app)
           .get("/api/articles")
