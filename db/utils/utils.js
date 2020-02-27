@@ -1,13 +1,5 @@
-// to-do: refactor with .map
+//Data formatting for before seeding
 exports.formatDates = list => {
-  // const formattedObjs = [];
-  // list.forEach(obj => {
-  //   formattedObjs.push({ ...obj });
-  // });
-  // formattedObjs.forEach(obj => {
-  //   obj.created_at = new Date(obj.created_at);
-  // });
-  // return formattedObjs;
   return list.map(item => {
     return {
       ...item,
@@ -24,7 +16,7 @@ exports.makeRefObj = list => {
   return newObj;
 };
 
-// to-do: refactor with .map
+// !!! to-do: refactor with .map
 exports.formatComments = (comments, articleRef) => {
   const formattedComments = [];
   comments.forEach(comment => {
@@ -38,4 +30,25 @@ exports.formatComments = (comments, articleRef) => {
     comment.created_at = new Date(comment.created_at);
   });
   return formattedComments;
+};
+
+// Helper functions for models
+const connection = require("../connection.js");
+
+exports.doesItExist = (value, column, table) => {
+  return connection(table)
+    .select("*")
+    .where(column, value)
+    .then(rows => {
+      return rows.length;
+    })
+    .catch(err => {
+      if (err.code === "42703") {
+        return "Column Doesn't Exist.";
+      } else if (err.code === "42P01") {
+        return "Table Doesn't Exist.";
+      } else {
+        return err;
+      }
+    });
 };

@@ -1,10 +1,14 @@
+process.env.NODE_ENV = "test";
+
 const { expect } = require("chai");
 const {
   formatDates,
   makeRefObj,
-  formatComments
+  formatComments,
+  doesItExist
 } = require("../db/utils/utils");
 
+//Data formatting for before seeding
 describe("formatDates", () => {
   it("returns an empty array when passed an empty array", () => {
     const input = [];
@@ -211,6 +215,31 @@ describe("formatComments", () => {
       created_by: "butter_bridge",
       votes: 16,
       created_at: 1511354163389
+    });
+  });
+});
+
+// Util functions used in models
+
+describe("doesItExist", () => {
+  it("returns 0 if required value doesn't exist in required table", () => {
+    doesItExist("banana", "slug", "topics").then(res => {
+      expect(res).to.equal(0);
+    });
+  });
+  it("returns 1 if required value does exist in required table", () => {
+    doesItExist("mitch", "slug", "topics").then(res => {
+      expect(res).to.equal(1);
+    });
+  });
+  it("returns an error message when passed a non-existent column in table", () => {
+    doesItExist("mitch", "banana", "topics").then(res => {
+      expect(res).to.equal("Column Doesn't Exist.");
+    });
+  });
+  it("returns an error message when passed a non-existent table", () => {
+    doesItExist("mitch", "slug", "banana").then(res => {
+      expect(res).to.equal("Table Doesn't Exist.");
     });
   });
 });
