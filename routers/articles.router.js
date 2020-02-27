@@ -3,10 +3,13 @@ const { handle405Errors, handleWrongRoute } = require("../errors/index.js");
 const {
   getArticleById,
   patchArticleById,
-  postComment,
-  getCommentsByArticleId,
   getArticles
 } = require("../controllers/articles.controller.js");
+
+const {
+  postComment,
+  getCommentsByArticleId
+} = require("../controllers/comments.controller.js");
 
 articlesRouter
   .route("/")
