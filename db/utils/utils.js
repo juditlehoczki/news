@@ -1,5 +1,5 @@
-//Data formatting for before seeding
-exports.formatDates = list => {
+//Formatting data before seeding
+const formatDates = list => {
   return list.map(item => {
     return {
       ...item,
@@ -8,7 +8,7 @@ exports.formatDates = list => {
   });
 };
 
-exports.makeRefObj = list => {
+const makeRefObj = list => {
   const newObj = {};
   list.forEach(obj => {
     newObj[obj.title] = obj.article_id;
@@ -16,26 +16,22 @@ exports.makeRefObj = list => {
   return newObj;
 };
 
-// !!! to-do: refactor with .map
-exports.formatComments = (comments, articleRef) => {
-  const formattedComments = [];
-  comments.forEach(comment => {
-    formattedComments.push({ ...comment });
+const formatComments = (comments, articleRef) => {
+  return comments.map(comment => {
+    const formattedComment = { ...comment };
+    formattedComment.author = comment.created_by;
+    delete formattedComment.created_by;
+    formattedComment.article_id = articleRef[comment.belongs_to];
+    delete formattedComment.belongs_to;
+    formattedComment.created_at = new Date(comment.created_at);
+    return formattedComment;
   });
-  formattedComments.forEach(comment => {
-    comment.author = comment.created_by;
-    delete comment.created_by;
-    comment.article_id = articleRef[comment.belongs_to];
-    delete comment.belongs_to;
-    comment.created_at = new Date(comment.created_at);
-  });
-  return formattedComments;
 };
 
-// Helper functions for models
+// Utility function for models
 const connection = require("../connection.js");
 
-exports.checkIfExists = (value, column, table) => {
+const checkIfExists = (value, column, table) => {
   if (value === undefined) {
     return 0;
   } else {
@@ -56,3 +52,5 @@ exports.checkIfExists = (value, column, table) => {
       });
   }
 };
+
+module.exports = { formatDates, makeRefObj, formatComments, checkIfExists };

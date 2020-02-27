@@ -9,7 +9,7 @@ const {
   checkIfExists
 } = require("../db/utils/utils");
 
-//Data formatting for before seeding
+//Formatting data before seeding
 describe("formatDates", () => {
   it("returns an empty array when passed an empty array", () => {
     const input = [];
@@ -220,7 +220,7 @@ describe("formatComments", () => {
   });
 });
 
-// Util functions used in models
+// Utility function for models
 describe("checkIfExists", () => {
   after(() => {
     return connection.destroy();
