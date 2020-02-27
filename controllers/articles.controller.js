@@ -18,12 +18,13 @@ const patchArticleById = (req, res, next) => {
     .catch(err => next(err));
 };
 
+// move to comments controllers
 const postComment = (req, res, next) => {
   addComment(req.params, req.body)
     .then(comment => res.status(201).send({ comment }))
     .catch(err => next(err));
 };
-
+// move to comments controllers
 const getCommentsByArticleId = (req, res, next) => {
   fetchCommentsByArticleId(req.params, req.query)
     .then(comments => res.send({ comments }))
