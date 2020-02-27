@@ -20,32 +20,6 @@ const fetchArticleById = ({ article_id }) => {
     });
 };
 
-// const updateArticleById = ({ article_id }, update) => {
-//   if (update.inc_votes === undefined) {
-//     return Promise.reject({ status: 400, msg: "Invalid Data Type." });
-//   } else if (Object.keys(update).length !== 1) {
-//     return Promise.reject({
-//       status: 400,
-//       msg: "You Can Only Update Votes."
-//     });
-//   } else {
-//     return connection("articles")
-//       .where({ article_id })
-//       .select("votes")
-//       .then(currentVoteValue => {
-//         return (
-//           connection("articles")
-//             .where({ article_id })
-//             .update({ votes: currentVoteValue[0].votes + update.inc_votes })
-//             .returning("*")
-//             .then(articleRows => {
-//               return articleRows[0];
-//             })
-//         );
-//       });
-//   }
-// };
-
 const updateArticleById = ({ article_id }, update) => {
   if (update.inc_votes === undefined) {
     return Promise.reject({ status: 400, msg: "Invalid Data Type." });
