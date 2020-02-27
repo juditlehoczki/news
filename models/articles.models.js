@@ -1,4 +1,5 @@
 const connection = require("../db/connection.js");
+const { checkIfExists } = require("../db/utils/utils.js");
 
 const fetchArticleById = ({ article_id }) => {
   return connection
@@ -44,7 +45,14 @@ const updateArticleById = ({ article_id }, update) => {
 };
 
 const fetchArticles = ({ sort_by, order, author, topic }) => {
-  if (order === "asc" || order === "desc" || order === undefined) {
+  if (order !== "asc" && order !== "desc" && order !== undefined) {
+    return Promise.reject({
+      status: 400,
+      msg: `Trying To Order By "${order}" Is Not Valid.`
+    });
+  } else {
+    let doesAuthorExist;
+    let doesTopicExist;
     return connection
       .select(
         "articles.article_id",
@@ -60,36 +68,46 @@ const fetchArticles = ({ sort_by, order, author, topic }) => {
       .count({ comment_count: "comments.article_id" })
       .orderBy(sort_by || "created_at", order || "desc")
       .modify(queryBuilder => {
-        if (author === undefined) queryBuilder;
-        else queryBuilder.where("articles.author", author);
+        if (author === undefined) {
+          doesAuthorExist = 0;
+          return queryBuilder;
+        } else {
+          doesAuthorExist = checkIfExists(author, "username", "users");
+          return queryBuilder.where("articles.author", author);
+        }
       })
       .modify(queryBuilder => {
-        if (topic === undefined) queryBuilder;
-        else queryBuilder.where("articles.topic", topic);
+        if (topic === undefined) {
+          doesTopicExist = 0;
+          return queryBuilder;
+        } else {
+          doesTopicExist = checkIfExists(topic, "slug", "topics");
+          return queryBuilder.where("articles.topic", topic);
+        }
       })
       .then(articleRows => {
         if (articleRows.length === 0) {
-          return connection("users")
-            .where("username", author)
-            .then(usersRows => {
-              if (usersRows.length === 0) {
+          return Promise.all([doesAuthorExist, doesTopicExist]).then(
+            ([doesAuthorExist, doesTopicExist]) => {
+              if (author !== undefined && doesAuthorExist === 0) {
                 return Promise.reject({
                   status: 404,
-                  msg: "User doesn't exist."
+                  msg: "Author Doesn't Exist."
+                });
+              } else if (topic !== undefined && doesTopicExist === 0) {
+                return Promise.reject({
+                  status: 404,
+                  msg: "Topic Doesn't Exist."
                 });
               } else {
                 return articleRows;
               }
-            });
+            }
+          );
         } else {
           return articleRows;
         }
       });
-  } else {
-    return Promise.reject({
-      status: 400,
-      msg: `Trying To Sort By "${order}" Is Not Valid.`
-    });
   }
 };
 

@@ -1,5 +1,5 @@
 const connection = require("../db/connection.js");
-const { doesItExist } = require("../db/utils/utils.js");
+const { checkIfExists } = require("../db/utils/utils.js");
 
 const updateCommentById = ({ comment_id }, { inc_votes }) => {
   return connection("comments")
@@ -49,7 +49,7 @@ const fetchCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
       .select("comment_id", "votes", "created_at", "author", "body")
       .orderBy(sort_by || "created_at", order || "desc")
       .then(commentsRows => {
-        const existsOrNot = doesItExist(article_id, "article_id", "articles");
+        const existsOrNot = checkIfExists(article_id, "article_id", "articles");
         return Promise.all([existsOrNot, commentsRows]);
       })
       .then(([existsOrNot, commentsRows]) => {

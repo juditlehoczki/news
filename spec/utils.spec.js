@@ -1,11 +1,12 @@
 process.env.NODE_ENV = "test";
+const connection = require("../db/connection.js");
 
 const { expect } = require("chai");
 const {
   formatDates,
   makeRefObj,
   formatComments,
-  doesItExist
+  checkIfExists
 } = require("../db/utils/utils");
 
 //Data formatting for before seeding
@@ -220,25 +221,28 @@ describe("formatComments", () => {
 });
 
 // Util functions used in models
-describe("doesItExist", () => {
+describe("checkIfExists", () => {
   it("returns 0 if required value doesn't exist in required table", () => {
-    doesItExist("banana", "slug", "topics").then(res => {
+    checkIfExists("banana", "slug", "topics").then(res => {
       expect(res).to.equal(0);
     });
   });
   it("returns 1 if required value does exist in required table", () => {
-    doesItExist("mitch", "slug", "topics").then(res => {
+    checkIfExists("mitch", "slug", "topics").then(res => {
       expect(res).to.equal(1);
     });
   });
   it("returns an error message when passed a non-existent column in table", () => {
-    doesItExist("mitch", "banana", "topics").then(res => {
+    checkIfExists("mitch", "banana", "topics").then(res => {
       expect(res).to.equal("Column Doesn't Exist.");
     });
   });
   it("returns an error message when passed a non-existent table", () => {
-    doesItExist("mitch", "slug", "banana").then(res => {
+    checkIfExists("mitch", "slug", "banana").then(res => {
       expect(res).to.equal("Table Doesn't Exist.");
     });
+  });
+  it("returns 0 if value is undefined", () => {
+    expect(checkIfExists(undefined, "slug", "banana")).to.equal(0);
   });
 });

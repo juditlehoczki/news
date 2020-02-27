@@ -35,20 +35,24 @@ exports.formatComments = (comments, articleRef) => {
 // Helper functions for models
 const connection = require("../connection.js");
 
-exports.doesItExist = (value, column, table) => {
-  return connection(table)
-    .select("*")
-    .where(column, value)
-    .then(rows => {
-      return rows.length;
-    })
-    .catch(err => {
-      if (err.code === "42703") {
-        return "Column Doesn't Exist.";
-      } else if (err.code === "42P01") {
-        return "Table Doesn't Exist.";
-      } else {
-        return err;
-      }
-    });
+exports.checkIfExists = (value, column, table) => {
+  if (value === undefined) {
+    return 0;
+  } else {
+    return connection(table)
+      .select("*")
+      .where(column, value)
+      .then(rows => {
+        return rows.length;
+      })
+      .catch(err => {
+        if (err.code === "42703") {
+          return "Column Doesn't Exist.";
+        } else if (err.code === "42P01") {
+          return "Table Doesn't Exist.";
+        } else {
+          return err;
+        }
+      });
+  }
 };

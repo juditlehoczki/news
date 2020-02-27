@@ -297,7 +297,7 @@ describe("Server", () => {
           .expect(400)
           .then(res => {
             expect(res.body.msg).to.equal(
-              'Trying To Sort By "banana" Is Not Valid.'
+              'Trying To Order By "banana" Is Not Valid.'
             );
           });
       });
@@ -319,7 +319,7 @@ describe("Server", () => {
       });
     });
 
-    describe("/articles", () => {
+    describe.only("/articles", () => {
       it("GET: 200 - responds with an array of articles", () => {
         return request(app)
           .get("/api/articles")
@@ -402,21 +402,19 @@ describe("Server", () => {
           .expect(400)
           .then(res => {
             expect(res.body.msg).to.equal(
-              'Trying To Sort By "banana" Is Not Valid.'
+              'Trying To Order By "banana" Is Not Valid.'
             );
           });
       });
-      //400 trying to filter by a non-existent author -> maybe should be querying the users table to check whether user exists?
       it("GET: 404 - returns an error message when trying to filter by a non-existent author", () => {
         return request(app)
           .get("/api/articles?author=banana")
           .expect(404)
           .then(res => {
-            expect(res.body.msg).to.equal("User doesn't exist.");
+            expect(res.body.msg).to.equal("Author Doesn't Exist.");
           });
       });
-      //404 trying to filter by a valid author that has no articles
-      it("GET: 200 - returns an error message when trying to filter by a valid author that has no articles", () => {
+      it("GET: 200 - returns an empty array when trying to filter by a valid author that has no articles", () => {
         return request(app)
           .get("/api/articles?author=lurker")
           .expect(200)
@@ -424,22 +422,20 @@ describe("Server", () => {
             expect(res.body.articles).to.deep.equal([]);
           });
       });
-      //404 trying to filter by a non-existent topic
       it("GET: 404 - returns an error message when trying to filter by a non-existent topic", () => {
         return request(app)
           .get("/api/articles?topic=banana")
           .expect(404)
           .then(res => {
-            expect(res.body.msg).to.equal("No Articles Found.");
+            expect(res.body.msg).to.equal("Topic Doesn't Exist.");
           });
       });
-      //404 trying to filter by a valid topic that has no articles
-      it("GET: 404 - returns an error message when trying to filter by a valid topic that has no articles", () => {
+      it("GET: 200 - returns an empty array when trying to filter by a valid topic that has no articles", () => {
         return request(app)
           .get("/api/articles?topic=paper")
-          .expect(404)
+          .expect(200)
           .then(res => {
-            expect(res.body.msg).to.equal("No Articles Found.");
+            expect(res.body.articles).to.deep.equal([]);
           });
       });
       it("PATCH: 405 - responds with an error message when using an unauthorised method", () => {
@@ -453,7 +449,7 @@ describe("Server", () => {
       });
     });
 
-    describe.only("/comments/:comment_id", () => {
+    describe("/comments/:comment_id", () => {
       it("PATCH: 200 - responds with an updated comment", () => {
         return request(app)
           .patch("/api/comments/1")
