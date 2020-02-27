@@ -33,13 +33,16 @@ const updateArticleById = ({ article_id }, update) => {
       .where({ article_id })
       .select("votes")
       .then(currentVoteValue => {
-        return connection("articles")
-          .where({ article_id })
-          .update({ votes: currentVoteValue[0].votes + update.inc_votes })
-          .returning("*")
-          .then(articleRows => {
-            return articleRows[0];
-          });
+        return (
+          connection("articles")
+            .where({ article_id })
+            .update({ votes: currentVoteValue[0].votes + update.inc_votes })
+            // .increment("votes", inc_votes || 0)
+            .returning("*")
+            .then(articleRows => {
+              return articleRows[0];
+            })
+        );
       });
   }
 };
