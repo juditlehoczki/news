@@ -114,7 +114,7 @@ describe("Server", () => {
       });
     });
 
-    describe("/articles/:article_id", () => {
+    describe.only("/articles/:article_id", () => {
       it("GET: 200 - responds with an article object", () => {
         return request(app)
           .get("/api/articles/1")
@@ -186,7 +186,7 @@ describe("Server", () => {
             expect(res.body.msg).to.equal("Invalid Data Type.");
           });
       });
-      it("PATCH: ", () => {
+      it("PATCH: 400 = responds with an error message when trying to patch anything else but votes", () => {
         return request(app)
           .patch("/api/articles/1")
           .send({ inc_votes: 1, name: "Banana" })
