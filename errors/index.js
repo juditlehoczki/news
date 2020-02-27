@@ -1,6 +1,5 @@
 const handlePSQLErrors = (err, req, res, next) => {
   if (err.code !== undefined) {
-    console.log("it is a PSQL error >>>>>>>>>", err.code);
     const errCodes = {
       "22P02": {
         status: 400,
@@ -14,27 +13,22 @@ const handlePSQLErrors = (err, req, res, next) => {
 };
 const handleCustomErrors = (err, req, res, next) => {
   if (err.status !== undefined) {
-    console.log("it is a custom error >>>>>>>>>", err);
     res.status(err.status).send({ msg: err.msg });
   } else next(err);
 };
 const handle500Errors = (err, req, res, next) => {
-  console.log("is it a 500 error?");
   res.status(500).send({ msg: "Internal Error. Sorry!" });
 };
 
 const handleWrongRoute = (req, res, next) => {
-  console.log("it is a 404 wrong route error");
   res.status(404).send({ msg: "Route Not Found." });
 };
 
 const handle405Errors = (req, res, next) => {
-  console.log("it is a 405 method error");
   res.status(405).send({ msg: "Method Not Allowed." });
 };
 
 const teaPot = (req, res, next) => {
-  console.log("I'm a teapot.");
   res.status(418).send({ msg: "You're a teapot." });
 };
 
