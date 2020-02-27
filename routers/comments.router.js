@@ -1,5 +1,5 @@
 const commentsRouter = require("express").Router();
-const { handle405Errors, handleWrongRoute } = require("../errors/index.js");
+const { handle405Errors } = require("../errors/index.js");
 const {
   patchCommentById,
   deleteCommentById
@@ -10,7 +10,5 @@ commentsRouter
   .patch(patchCommentById)
   .delete(deleteCommentById)
   .all(handle405Errors);
-
-commentsRouter.route("/*", handleWrongRoute);
 
 module.exports = commentsRouter;
