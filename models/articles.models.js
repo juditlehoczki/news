@@ -1,5 +1,5 @@
 const connection = require("../db/connection.js");
-const { checkIfExists } = require("../db/utils/utils.js");
+const { checkIfExists, countPosts } = require("../db/utils/utils.js");
 
 const fetchArticleById = ({ article_id }) => {
   return connection
@@ -40,7 +40,7 @@ const updateArticleById = ({ article_id }, update) => {
   }
 };
 
-const fetchArticles = ({ sort_by, order, author, topic }) => {
+const fetchArticles = ({ sort_by, order, author, topic, limit, p }) => {
   if (order !== "asc" && order !== "desc" && order !== undefined) {
     return Promise.reject({
       status: 400,
@@ -49,7 +49,7 @@ const fetchArticles = ({ sort_by, order, author, topic }) => {
   } else {
     let doesAuthorExist;
     let doesTopicExist;
-    return connection
+    return connection("articles")
       .select(
         "articles.article_id",
         "articles.title",
@@ -58,7 +58,6 @@ const fetchArticles = ({ sort_by, order, author, topic }) => {
         "articles.author",
         "articles.created_at"
       )
-      .from("articles")
       .leftJoin("comments", "articles.article_id", "=", "comments.article_id")
       .groupBy("articles.article_id")
       .count({ comment_count: "comments.article_id" })
@@ -81,6 +80,8 @@ const fetchArticles = ({ sort_by, order, author, topic }) => {
           return queryBuilder.where("articles.topic", topic);
         }
       })
+      .limit(limit || 10)
+      .offset((p - 1 || 0) * (limit || 10))
       .then(articleRows => {
         if (articleRows.length === 0) {
           return Promise.all([doesAuthorExist, doesTopicExist]).then(
@@ -96,12 +97,16 @@ const fetchArticles = ({ sort_by, order, author, topic }) => {
                   msg: "Topic Doesn't Exist."
                 });
               } else {
-                return articleRows;
+                return { articles: articleRows, total_count: 0 };
               }
             }
           );
         } else {
-          return articleRows;
+          return countPosts("articles", { topic, author }).then(
+            articleCount => {
+              return { articles: articleRows, total_count: articleCount };
+            }
+          );
         }
       });
   }
@@ -110,5 +115,6 @@ const fetchArticles = ({ sort_by, order, author, topic }) => {
 module.exports = {
   fetchArticleById,
   updateArticleById,
-  fetchArticles
+  fetchArticles,
+  countPosts
 };

@@ -18,7 +18,7 @@ const patchArticleById = (req, res, next) => {
 
 const getArticles = (req, res, next) => {
   fetchArticles(req.query)
-    .then(articles => res.send({ articles }))
+    .then(articles => res.send(articles))
     .catch(err => next(err));
 };
 

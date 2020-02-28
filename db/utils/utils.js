@@ -53,4 +53,23 @@ const checkIfExists = (value, column, table) => {
   }
 };
 
-module.exports = { formatDates, makeRefObj, formatComments, checkIfExists };
+const countPosts = (table, queries) => {
+  const modified = { ...queries };
+  Object.keys(modified).forEach(key => {
+    if (modified[key] === undefined) {
+      delete modified[key];
+    }
+  });
+  return connection(table)
+    .select("*")
+    .where(modified)
+    .then(res => res.length);
+};
+
+module.exports = {
+  formatDates,
+  makeRefObj,
+  formatComments,
+  checkIfExists,
+  countPosts
+};
