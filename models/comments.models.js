@@ -44,7 +44,10 @@ const addComment = ({ article_id }, { username, body }) => {
   }
 };
 
-const fetchCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
+const fetchCommentsByArticleId = (
+  { article_id },
+  { sort_by, order, limit, p }
+) => {
   if (order !== "asc" && order !== "desc" && order !== undefined) {
     return Promise.reject({
       status: 400,
@@ -55,13 +58,18 @@ const fetchCommentsByArticleId = ({ article_id }, { sort_by, order }) => {
       .where({ article_id })
       .select("comment_id", "votes", "created_at", "author", "body")
       .orderBy(sort_by || "created_at", order || "desc")
+      .limit(limit || 10)
+      .offset((p - 1 || 0) * (limit || 10))
       .then(commentsRows => {
         const existsOrNot = checkIfExists(article_id, "article_id", "articles");
         return Promise.all([existsOrNot, commentsRows]);
       })
       .then(([existsOrNot, commentsRows]) => {
         if (existsOrNot === 0) {
-          return Promise.reject({ status: 404, msg: "Article Doesn't Exist." });
+          return Promise.reject({
+            status: 404,
+            msg: "Article Doesn't Exist."
+          });
         } else {
           return commentsRows;
         }

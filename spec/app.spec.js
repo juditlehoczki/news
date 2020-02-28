@@ -197,7 +197,7 @@ describe("Server", () => {
       });
     });
 
-    describe("/articles/:article_id/comments", () => {
+    describe.only("/articles/:article_id/comments", () => {
       it("POST: 201 - responds with the comment object", () => {
         return request(app)
           .post("/api/articles/1/comments")
@@ -250,7 +250,7 @@ describe("Server", () => {
           .get("/api/articles/1/comments")
           .expect(200)
           .then(res => {
-            expect(res.body.comments.length).to.equal(13);
+            expect(res.body.comments).to.be.an("array");
           });
       });
       it("GET: 200 - responds with an empty array if the article exists but has no comments", () => {
@@ -299,6 +299,33 @@ describe("Server", () => {
             expect(res.body.comments).to.be.sortedBy("comment_id", {
               descending: true
             });
+          });
+      });
+      it("GET: 200 - responds with only 10 comments by default when limit is not provided", () => {
+        return request(app)
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments.length).to.equal(10);
+          });
+      });
+      it("GET: 200 - responds with only 5 comments when limit is provided", () => {
+        return request(app)
+          .get("/api/articles/1/comments?limit=5")
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments.length).to.equal(5);
+          });
+      });
+      it("GET: 200 - responds with the correct comments on page 2", () => {
+        return request(app)
+          .get(
+            "/api/articles/1/comments?sort_by=comment_id&order=asc&limit=5&p=2"
+          )
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments[0].comment_id).to.equal(7);
+            expect(res.body.comments.length).to.equal(5);
           });
       });
       it("GET: 400 - responds with an error message when trying to sort by a non-existent column", () => {
@@ -454,6 +481,39 @@ describe("Server", () => {
           .expect(200)
           .then(res => {
             expect(res.body.articles).to.deep.equal([]);
+          });
+      });
+      it("GET: 200 - responds with only 10 articles by default when limit is not provided", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles.length).to.equal(10);
+          });
+      });
+      it("GET: 200 - responds with only 5 articles when limit is provided", () => {
+        return request(app)
+          .get("/api/articles?limit=5")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles.length).to.equal(5);
+          });
+      });
+      it("GET: 200 - responds with the correct articles on page 2", () => {
+        return request(app)
+          .get("/api/articles?sort_by=article_id&order=asc&limit=5&p=2")
+          .expect(200)
+          .then(res => {
+            expect(res.body.articles[0].article_id).to.equal(6);
+            expect(res.body.articles.length).to.equal(5);
+          });
+      });
+      it("GET: 200 - responds with the total article count of articles that match the criteria", () => {
+        return request(app)
+          .get("/api/articles?topic=mitch&limit=5&p=2")
+          .expect(200)
+          .then(res => {
+            expect(res.body.total_count).to.equal(11);
           });
       });
       it("PATCH: 405 - responds with an error message when using an unauthorised method", () => {
