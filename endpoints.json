@@ -1,45 +1,151 @@
 {
   "GET /api": {
-    "description": ""
+    "description": "Serves up a JSON representation of all the available endpoints of the API."
   },
   "GET /api/topics": {
-    "description": "",
-    "exampleResponse": {}
+    "description": "Serves up an array of all topics.",
+    "queries": {},
+    "exampleResponse": {
+      "topics": [
+        {
+          "slug": "coding",
+          "description": "Code is love, code is life"
+        }
+      ]
+    }
   },
-  "GET /api/users/:username": {
-    "description": "",
-    "exampleResponse": {}
+  "GET /api/users/{username}": {
+    "description": "Serves up an information object about a specific user.",
+    "queries": {},
+    "parameters": { "username": "Identifier of the user." },
+    "exampleResponse": {
+      "user": {
+        "username": "grumpy19",
+        "avatar_url": "https://www.tumbit.com/profile-image/4/original/mr-grumpy.jpg",
+        "name": "Paul Grump"
+      }
+    }
   },
   "GET /api/articles": {
-    "description": "",
-    "exampleResponse": {}
+    "description": "Serves up an array of articles.",
+    "queries": {
+      "author": "Filters articles by author.",
+      "topic": "Filters articles by topic.",
+      "sort_by": "Sorts by either 'article_id', 'title', 'body', 'votes', 'topic', 'author' or 'created_at'.",
+      "order": "Ascending or descending."
+    },
+    "parameters": {},
+    "exampleResponse": {
+      "articles": [
+        {
+          "article_id": 33,
+          "title": "Seafood substitutions are increasing",
+          "votes": 0,
+          "topic": "cooking",
+          "author": "weegembump",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "comment_count": "6"
+        }
+      ]
+    }
   },
-  "GET /api/articles/:article_id": {
-    "description": "",
-    "exampleResponse": {}
+  "GET /api/articles/{article_id}": {
+    "description": "Serves up an article object by article_id.",
+    "queries": {},
+    "parameters": { "article_id": "Identifier of the article." },
+    "exampleResponse": {
+      "article": {
+        "article_id": 33,
+        "title": "Seafood substitutions are increasing",
+        "votes": 0,
+        "topic": "cooking",
+        "author": "weegembump",
+        "created_at": "2018-05-30T15:59:13.341Z",
+        "comment_count": "6"
+      }
+    }
   },
-  "PATCH /api/articles/:article_id": {
-    "description": "",
-    "exampleResponse": {}
+  "PATCH /api/articles/{article_id}": {
+    "description": "Updates the given article's votes value.",
+    "queries": {},
+    "parameters": { "article_id": "Identifier of the article." },
+    "requirements": {
+      "inc_votes": "The value to change the total value of votes by."
+    },
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Running a Node App",
+        "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        "votes": 4,
+        "topic": "coding",
+        "author": "jessjelly",
+        "created_at": "2016-08-18T12:07:52.389Z"
+      }
+    }
   },
   "GET /api/articles/:article_id/comments": {
-    "description": "",
-    "exampleResponse": {}
+    "description": "Serves up an array of comments of the given article.",
+    "queries": {
+      "sort_by": "Sorts by either 'comment_id', 'author', 'article_id', 'votes', or 'created_at'.",
+      "order": "Ascending or descending."
+    },
+    "parameters": { "article_id": "Identifier of the article." },
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 44,
+          "votes": 4,
+          "created_at": "2017-11-20T08:58:48.322Z",
+          "author": "grumpy19",
+          "body": "Error est qui id corrupti et quod enim accusantium minus. Deleniti quae ea magni officiis et qui suscipit non."
+        }
+      ]
+    }
   },
-  "POST /api/articles/:article_id/comments": {
-    "description": "",
-    "exampleResponse": {}
+  "POST /api/articles/{article_id}/comments": {
+    "description": "Uploads a new comment to a given article.",
+    "queries": {},
+    "parameters": { "article_id": "Identifier of the article." },
+    "requirements": {
+      "username": "Identifier of the user.",
+      "body": "Test of the comment."
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 302,
+        "author": "grumpy19",
+        "article_id": 1,
+        "votes": 0,
+        "created_at": "2020-02-28T10:33:16.172Z",
+        "body": "Posting a new test comment."
+      }
+    }
   },
-  "PATCH /api/comments/:comment_id": {
-    "description": "",
-    "exampleResponse": {}
+  "PATCH /api/comments/{comment_id}": {
+    "description": "Updates the given comment's votes value.",
+    "queries": {},
+    "parameters": { "comment_id": "Identifier of the article." },
+    "requirements": {
+      "inc_votes": "The value to change the total value of votes by."
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 1,
+        "author": "tickle122",
+        "article_id": 18,
+        "votes": 1,
+        "created_at": "2016-07-09T18:07:18.932Z",
+        "body": "Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus."
+      }
+    }
   },
-  "DELETE /api/comments/:comment_id": {
-    "description": "",
-    "exampleResponse": {}
+  "DELETE /api/comments/{comment_id}": {
+    "description": "Removes a given comment.",
+    "queries": {},
+    "parameters": { "comment_id": "Identifier of the article." }
   },
   "GET /api/teapot": {
-    "description": "",
-    "exampleResponse": {}
+    "description": "You're a teapot."
   }
 }
