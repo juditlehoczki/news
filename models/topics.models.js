@@ -1,7 +1,14 @@
 const connection = require("../db/connection.js");
 
 const fetchTopics = () => {
-  return connection.select("*").from("topics");
+  return connection("topics").select("*");
 };
 
-module.exports = { fetchTopics };
+const addTopic = topic => {
+  return connection("topics")
+    .insert(topic)
+    .returning("*")
+    .then(topicRow => topicRow[0]);
+};
+
+module.exports = { fetchTopics, addTopic };

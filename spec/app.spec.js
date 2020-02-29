@@ -70,13 +70,23 @@ describe("Server", () => {
             expect(res.body.msg).to.equal("Route Not Found.");
           });
       });
-      it("POST: 405 - responds with an error message when using an unauthorised method", () => {
+      it("PATCH: 405 - responds with an error message when using an unauthorised method", () => {
         return request(app)
-          .post("/api/topics")
+          .patch("/api/topics")
           .send({ test: "test" })
           .expect(405)
           .then(res => {
             expect(res.body.msg).to.equal("Method Not Allowed.");
+          });
+      });
+      it.only("POST: 201 - responds with the topic object", () => {
+        return request(app)
+          .post("/api/topics")
+          .send({ slug: "test", description: "testing testing" })
+          .expect(201)
+          .then(res => {
+            expect(res.body.topic).to.have.all.keys("slug", "description");
+            expect(res.body.topic.slug).to.equal("test");
           });
       });
     });
