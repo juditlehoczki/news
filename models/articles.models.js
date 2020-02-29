@@ -113,16 +113,25 @@ const fetchArticles = ({ sort_by, order, author, topic, limit, p }) => {
 };
 
 const addArticle = ({ username, body, title, topic }) => {
-  const article = {
-    author: username,
-    body,
-    title,
-    topic
-  };
-  return connection("articles")
-    .insert(article)
-    .returning("*")
-    .then(articleRows => articleRows[0]);
+  if (
+    username === undefined ||
+    body === undefined ||
+    title === undefined ||
+    topic === undefined
+  ) {
+    return Promise.reject({ status: 400, msg: "More Information Required." });
+  } else {
+    const article = {
+      author: username,
+      body,
+      title,
+      topic
+    };
+    return connection("articles")
+      .insert(article)
+      .returning("*")
+      .then(articleRows => articleRows[0]);
+  }
 };
 
 module.exports = {

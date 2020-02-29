@@ -223,7 +223,7 @@ describe("Server", () => {
           .send({ username: "butter_bridge", body: "I don't like bananas." })
           .expect(404)
           .then(res => {
-            expect(res.body.msg).to.equal("Article Or User Not Found.");
+            expect(res.body.msg).to.equal("Not Found.");
           });
       });
       it("POST: 400 - responds with an error message when trying to post to an invalid article_id", () => {
@@ -250,7 +250,7 @@ describe("Server", () => {
           .send({ username: "banana", body: "I don't like bananas." })
           .expect(404)
           .then(res => {
-            expect(res.body.msg).to.equal("Article Or User Not Found.");
+            expect(res.body.msg).to.equal("Not Found.");
           });
       });
       it("GET: 200 - responds with an array of comments", () => {
@@ -526,14 +526,14 @@ describe("Server", () => {
       });
       it("PATCH: 405 - responds with an error message when using an unauthorised method", () => {
         return request(app)
-          .post("/api/articles")
+          .patch("/api/articles")
           .send({ test: "test" })
           .expect(405)
           .then(res => {
             expect(res.body.msg).to.equal("Method Not Allowed.");
           });
       });
-      it.only("POST: 201 - responds with the article object", () => {
+      it("POST: 201 - responds with the article object", () => {
         return request(app)
           .post("/api/articles")
           .send({
@@ -556,6 +556,45 @@ describe("Server", () => {
               "author",
               "created_at"
             );
+          });
+      });
+      it("POST: 400 - responds with an error message when request does not include all the required keys", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            body: "Posting a test article."
+          })
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.deep.equal("More Information Required.");
+          });
+      });
+      it("POST: 404 - responds with an error message when trying to post with a username that doesn't exist.", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            username: "banana",
+            body: "Posting a test article.",
+            title: "Test Article",
+            topic: "mitch"
+          })
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.deep.equal("Not Found.");
+          });
+      });
+      it("POST: 404 - responds with an error message when trying to post with a topic that doesn't exist.", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            username: "butter_bridge",
+            body: "Posting a test article.",
+            title: "Test Article",
+            topic: "banana"
+          })
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.deep.equal("Not Found.");
           });
       });
     });
