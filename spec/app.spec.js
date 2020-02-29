@@ -179,13 +179,67 @@ describe("Server", () => {
             expect(res.body.msg).to.equal("More Information Required.");
           });
       });
-      it.only("GET: 200 - responds with an array of users", () => {
+      it("GET: 200 - responds with an array of users", () => {
         return request(app)
           .get("/api/users")
           .expect(200)
           .then(res => {
             res.body.users.forEach(user => {
               expect(user).to.have.all.keys("username", "name", "avatar_url");
+            });
+          });
+      });
+      it("GET: 200 - responds with an array of users sorted by username in ascending order by default", () => {
+        return request(app)
+          .get("/api/users")
+          .expect(200)
+          .then(res => {
+            expect(res.body.users).to.be.sortedBy("username");
+          });
+      });
+      it("GET: 200 - responds with an array of users sorted by username in descending order when requested", () => {
+        return request(app)
+          .get("/api/users?order=desc")
+          .expect(200)
+          .then(res => {
+            expect(res.body.users).to.be.sortedBy("username", {
+              descending: true
+            });
+          });
+      });
+      it("GET: 200 - responds with an array of users sorted by name when requested", () => {
+        return request(app)
+          .get("/api/users?sort_by=name")
+          .expect(200)
+          .then(res => {
+            expect(res.body.users).to.be.sortedBy("name");
+          });
+      });
+      it("GET: 400 - returns an error message when trying to order by anything else but asc or desc", () => {
+        return request(app)
+          .get("/api/users?order=banana")
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.equal(
+              'Trying To Order By "banana" Is Not Valid.'
+            );
+          });
+      });
+      it("GET: 400 - returns an error message when trying to sort by a column that doesn't exist", () => {
+        return request(app)
+          .get("/api/users?sort_by=banana")
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.equal("Invalid Column.");
+          });
+      });
+      it("GET: 200 - responds with an array of articles sorted by requested column", () => {
+        return request(app)
+          .get("/api/users?sort_by=name&order=desc")
+          .expect(200)
+          .then(res => {
+            expect(res.body.users).to.be.sortedBy("name", {
+              descending: true
             });
           });
       });

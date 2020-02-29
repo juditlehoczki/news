@@ -17,7 +17,7 @@ const postUser = (req, res, next) => {
 };
 
 const getUsers = (req, res, next) => {
-  fetchUsers()
+  fetchUsers(req.query)
     .then(users => res.send({ users }))
     .catch(err => next(err));
 };
