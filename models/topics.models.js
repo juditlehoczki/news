@@ -4,11 +4,15 @@ const fetchTopics = () => {
   return connection("topics").select("*");
 };
 
-const addTopic = topic => {
-  return connection("topics")
-    .insert(topic)
-    .returning("*")
-    .then(topicRow => topicRow[0]);
+const addTopic = ({ slug, description }) => {
+  if (slug === undefined || description === undefined) {
+    return Promise.reject({ status: 400, msg: "More Information Required." });
+  } else {
+    return connection("topics")
+      .insert({ slug, description })
+      .returning("*")
+      .then(topicRow => topicRow[0]);
+  }
 };
 
 module.exports = { fetchTopics, addTopic };

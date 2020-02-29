@@ -79,7 +79,7 @@ describe("Server", () => {
             expect(res.body.msg).to.equal("Method Not Allowed.");
           });
       });
-      it.only("POST: 201 - responds with the topic object", () => {
+      it("POST: 201 - responds with the topic object", () => {
         return request(app)
           .post("/api/topics")
           .send({ slug: "test", description: "testing testing" })
@@ -87,6 +87,15 @@ describe("Server", () => {
           .then(res => {
             expect(res.body.topic).to.have.all.keys("slug", "description");
             expect(res.body.topic.slug).to.equal("test");
+          });
+      });
+      it("POST: 400 - responds with an error message when request doesn't include all the required keys", () => {
+        return request(app)
+          .post("/api/topics")
+          .send({ slug: "test" })
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.equal("More Information Required.");
           });
       });
     });
@@ -592,7 +601,7 @@ describe("Server", () => {
             expect(res.body.msg).to.deep.equal("More Information Required.");
           });
       });
-      it("POST: 404 - responds with an error message when trying to post with a username that doesn't exist.", () => {
+      it("POST: 404 - responds with an error message when trying to post with a username that doesn't exist", () => {
         return request(app)
           .post("/api/articles")
           .send({
@@ -606,7 +615,7 @@ describe("Server", () => {
             expect(res.body.msg).to.deep.equal("Not Found.");
           });
       });
-      it("POST: 404 - responds with an error message when trying to post with a topic that doesn't exist.", () => {
+      it("POST: 404 - responds with an error message when trying to post with a topic that doesn't exist", () => {
         return request(app)
           .post("/api/articles")
           .send({
