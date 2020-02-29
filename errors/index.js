@@ -1,4 +1,5 @@
 const handlePSQLErrors = (err, req, res, next) => {
+  console.log("PSQL error: ", err.code);
   if (err.code !== undefined) {
     const errCodes = {
       "22P02": {
@@ -12,11 +13,13 @@ const handlePSQLErrors = (err, req, res, next) => {
   } else next(err);
 };
 const handleCustomErrors = (err, req, res, next) => {
+  console.log("Custom error: ", err);
   if (err.status !== undefined) {
     res.status(err.status).send({ msg: err.msg });
   } else next(err);
 };
 const handle500Errors = (err, req, res, next) => {
+  console.log("500 error: ", err);
   res.status(500).send({ msg: "Internal Error. Sorry!" });
 };
 

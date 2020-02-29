@@ -112,9 +112,23 @@ const fetchArticles = ({ sort_by, order, author, topic, limit, p }) => {
   }
 };
 
+const addArticle = ({ username, body, title, topic }) => {
+  const article = {
+    author: username,
+    body,
+    title,
+    topic
+  };
+  return connection("articles")
+    .insert(article)
+    .returning("*")
+    .then(articleRows => articleRows[0]);
+};
+
 module.exports = {
   fetchArticleById,
   updateArticleById,
   fetchArticles,
-  countPosts
+  countPosts,
+  addArticle
 };

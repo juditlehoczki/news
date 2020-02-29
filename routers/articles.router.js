@@ -3,7 +3,8 @@ const { handle405Errors, handleWrongRoute } = require("../errors/index.js");
 const {
   getArticleById,
   patchArticleById,
-  getArticles
+  getArticles,
+  postArticle
 } = require("../controllers/articles.controller.js");
 
 const {
@@ -14,6 +15,7 @@ const {
 articlesRouter
   .route("/")
   .get(getArticles)
+  .post(postArticle)
   .all(handle405Errors);
 
 articlesRouter

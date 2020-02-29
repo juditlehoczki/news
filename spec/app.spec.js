@@ -197,7 +197,7 @@ describe("Server", () => {
       });
     });
 
-    describe.only("/articles/:article_id/comments", () => {
+    describe("/articles/:article_id/comments", () => {
       it("POST: 201 - responds with the comment object", () => {
         return request(app)
           .post("/api/articles/1/comments")
@@ -206,6 +206,14 @@ describe("Server", () => {
           .then(res => {
             expect(res.body.comment.body).to.deep.equal(
               "I don't like bananas."
+            );
+            expect(res.body.comment).to.have.all.keys(
+              "comment_id",
+              "author",
+              "article_id",
+              "votes",
+              "created_at",
+              "body"
             );
           });
       });
@@ -523,6 +531,31 @@ describe("Server", () => {
           .expect(405)
           .then(res => {
             expect(res.body.msg).to.equal("Method Not Allowed.");
+          });
+      });
+      it.only("POST: 201 - responds with the article object", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            username: "butter_bridge",
+            body: "Posting a test article.",
+            title: "Test Article",
+            topic: "mitch"
+          })
+          .expect(201)
+          .then(res => {
+            expect(res.body.article.body).to.deep.equal(
+              "Posting a test article."
+            );
+            expect(res.body.article).to.have.all.keys(
+              "article_id",
+              "title",
+              "body",
+              "votes",
+              "topic",
+              "author",
+              "created_at"
+            );
           });
       });
     });
