@@ -20,4 +20,8 @@ const addUser = ({ username, name, avatar_url }) => {
     .then(userRow => userRow[0]);
 };
 
-module.exports = { fetchUserByUsername, addUser };
+const fetchUsers = () => {
+  return connection("users").select("*");
+};
+
+module.exports = { fetchUserByUsername, addUser, fetchUsers };

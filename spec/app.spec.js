@@ -150,6 +150,9 @@ describe("Server", () => {
             expect(res.body.user.username).to.equal("juditlehoczki");
           });
       });
+    });
+
+    describe("/api/users", () => {
       it("POST: 201 - responds with the user object when only username and name provided (but no avatar)", () => {
         return request(app)
           .post("/api/users")
@@ -174,6 +177,16 @@ describe("Server", () => {
           .expect(400)
           .then(res => {
             expect(res.body.msg).to.equal("More Information Required.");
+          });
+      });
+      it.only("GET: 200 - responds with an array of users", () => {
+        return request(app)
+          .get("/api/users")
+          .expect(200)
+          .then(res => {
+            res.body.users.forEach(user => {
+              expect(user).to.have.all.keys("username", "name", "avatar_url");
+            });
           });
       });
     });
