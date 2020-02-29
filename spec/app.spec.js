@@ -195,6 +195,19 @@ describe("Server", () => {
             expect(res.body.msg).to.equal("You Can Only Update Votes.");
           });
       });
+      it("DELETE: 204 - responds with a 204 when deleting article by ID", () => {
+        return request(app)
+          .delete("/api/articles/1")
+          .expect(204);
+      });
+      it("DELETE: 404 - responds with an error message when trying to delete a non-existent article", () => {
+        return request(app)
+          .delete("/api/articles/99999")
+          .expect(404)
+          .then(res => {
+            expect(res.body.msg).to.equal("Article Not Found.");
+          });
+      });
     });
 
     describe("/articles/:article_id/comments", () => {
@@ -632,7 +645,7 @@ describe("Server", () => {
           .delete("/api/comments/1")
           .expect(204);
       });
-      it("DELETE: 404 - responds with a 404 when trying to delete a non-existent comment", () => {
+      it("DELETE: 404 - responds with an error message when trying to delete a non-existent comment", () => {
         return request(app)
           .delete("/api/comments/99999")
           .expect(404)

@@ -4,7 +4,8 @@ const {
   getArticleById,
   patchArticleById,
   getArticles,
-  postArticle
+  postArticle,
+  deleteArticle
 } = require("../controllers/articles.controller.js");
 
 const {
@@ -22,6 +23,7 @@ articlesRouter
   .route("/:article_id")
   .get(getArticleById)
   .patch(patchArticleById)
+  .delete(deleteArticle)
   .all(handle405Errors);
 
 articlesRouter

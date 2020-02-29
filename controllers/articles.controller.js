@@ -2,7 +2,8 @@ const {
   fetchArticleById,
   updateArticleById,
   fetchArticles,
-  addArticle
+  addArticle,
+  removeArticle
 } = require("../models/articles.models.js");
 
 const getArticleById = (req, res, next) => {
@@ -29,9 +30,16 @@ const postArticle = (req, res, next) => {
     .catch(err => next(err));
 };
 
+const deleteArticle = (req, res, next) => {
+  removeArticle(req.params)
+    .then(() => res.status(204).send())
+    .catch(err => next(err));
+};
+
 module.exports = {
   getArticleById,
   patchArticleById,
   getArticles,
-  postArticle
+  postArticle,
+  deleteArticle
 };

@@ -134,10 +134,22 @@ const addArticle = ({ username, body, title, topic }) => {
   }
 };
 
+const removeArticle = ({ article_id }) => {
+  return connection("articles")
+    .where({ article_id })
+    .del()
+    .then(rows => {
+      if (rows === 0) {
+        return Promise.reject({ status: 404, msg: "Article Not Found." });
+      }
+    });
+};
+
 module.exports = {
   fetchArticleById,
   updateArticleById,
   fetchArticles,
   countPosts,
-  addArticle
+  addArticle,
+  removeArticle
 };
