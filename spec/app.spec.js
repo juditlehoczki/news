@@ -131,6 +131,51 @@ describe("Server", () => {
             expect(res.body.msg).to.equal("Method Not Allowed.");
           });
       });
+      it("POST: 201 - responds with the user object", () => {
+        return request(app)
+          .post("/api/users")
+          .send({
+            username: "juditlehoczki",
+            name: "Judit Lehoczki",
+            avatar_url:
+              "https://image.freepik.com/free-vector/flat-design-young-girl-programmer-working_23-2148267156.jpg"
+          })
+          .expect(201)
+          .then(res => {
+            expect(res.body.user).to.have.all.keys(
+              "username",
+              "avatar_url",
+              "name"
+            );
+            expect(res.body.user.username).to.equal("juditlehoczki");
+          });
+      });
+      it("POST: 201 - responds with the user object when only username and name provided (but no avatar)", () => {
+        return request(app)
+          .post("/api/users")
+          .send({
+            username: "juditlehoczki",
+            name: "Judit Lehoczki"
+          })
+          .expect(201)
+          .then(res => {
+            expect(res.body.user).to.have.all.keys(
+              "username",
+              "avatar_url",
+              "name"
+            );
+            expect(res.body.user.username).to.equal("juditlehoczki");
+          });
+      });
+      it("POST: 400 - responds with an error message when request does not include all the required keys", () => {
+        return request(app)
+          .post("/api/users")
+          .send({ username: "juditlehoczki" })
+          .expect(400)
+          .then(res => {
+            expect(res.body.msg).to.equal("More Information Required.");
+          });
+      });
     });
 
     describe("/articles/:article_id", () => {
@@ -273,7 +318,7 @@ describe("Server", () => {
           .send({ body: "I don't like bananas." })
           .expect(400)
           .then(res => {
-            expect(res.body.msg).to.equal("Username Or Comment is Missing.");
+            expect(res.body.msg).to.equal("More Information Required.");
           });
       });
       it("POST: 404 - responds with an error message when trying to post with a non-existent username", () => {

@@ -6,6 +6,7 @@ const handlePSQLErrors = (err, req, res, next) => {
         status: 400,
         msg: "Invalid Data Type."
       },
+      "23502": { status: 400, msg: "More Information Required." },
       "23503": { status: 404, msg: "Not Found." },
       "42703": { status: 400, msg: "Invalid Column." }
     };
