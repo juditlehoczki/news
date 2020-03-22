@@ -3,7 +3,7 @@
     "description": "Serves up a JSON representation of all the available endpoints of the API."
   },
   "GET /api/topics": {
-    "description": "Serves up an array of all topics.",
+    "description": "Serves up an array of topic objects.",
     "queries": {},
     "exampleResponse": {
       "topics": [
@@ -12,6 +12,27 @@
           "description": "Code is love, code is life"
         }
       ]
+    }
+  },
+  "POST /api/topics": {
+    "description": "Uploads a new topic.",
+    "queries": {},
+    "parameters": {},
+    "requirements": {
+      "format": {
+        "slug": "coding",
+        "description": "Code is love, code is life"
+      },
+      "details": {
+        "slug": "One word topic name.",
+        "description": "Short description of the topic."
+      }
+    },
+    "exampleResponse": {
+      "topic": {
+        "slug": "coding",
+        "description": "Code is love, code is life"
+      }
     }
   },
   "GET /api/users/{username}": {
@@ -26,13 +47,61 @@
       }
     }
   },
+  "POST /api/users": {
+    "description": "Registers a new user.",
+    "queries": {},
+    "parameters": {},
+    "requirements": {
+      "format": {
+        "username": "grumpy19",
+        "avatar_url": "https://www.tumbit.com/profile-image/4/original/mr-grumpy.jpg",
+        "name": "Paul Grump"
+      },
+      "details": {
+        "name": "Full name.",
+        "username": "A one word username.",
+        "avatar_url": "Url to the user avatar."
+      }
+    },
+    "exampleResponse": {
+      "user": {
+        "username": "grumpy19",
+        "avatar_url": "https://www.tumbit.com/profile-image/4/original/mr-grumpy.jpg",
+        "name": "Paul Grump"
+      }
+    }
+  },
+  "GET /api/users": {
+    "description": "Serves up an array of user objects.",
+    "queries": {
+      "sort_by": "Sorts by either 'username' or 'name'.",
+      "order": "Ascending or descending."
+    },
+    "parameters": {},
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "cooljmessy",
+          "avatar_url": "https://i.imgur.com/WfX0Neu.jpg",
+          "name": "Peter Messy"
+        },
+        {
+          "username": "grumpy19",
+          "avatar_url": "https://www.tumbit.com/profile-image/4/original/mr-grumpy.jpg",
+          "name": "Paul Grump"
+        }
+      ]
+    }
+  },
   "GET /api/articles": {
-    "description": "Serves up an array of articles.",
+    "description": "Serves up an array of article objects.",
     "queries": {
       "author": "Filters articles by author.",
       "topic": "Filters articles by topic.",
       "sort_by": "Sorts by either 'article_id', 'title', 'body', 'votes', 'topic', 'author' or 'created_at'.",
-      "order": "Ascending or descending."
+      "order": "Ascending or descending.",
+      "limit": "Limits the number of responses (defaults to 10).",
+      "p": "Specifies the page at which to start (calculated using limit)."
     },
     "parameters": {},
     "exampleResponse": {
@@ -46,7 +115,39 @@
           "created_at": "2018-05-30T15:59:13.341Z",
           "comment_count": "6"
         }
-      ]
+      ],
+      "total_count": 1
+    }
+  },
+  "POST /api/articles": {
+    "description": "Uploads a new article.",
+    "queries": {},
+    "parameters": {},
+    "requirements": {
+      "format": {
+        "title": "Given title",
+        "body": "Example article right here.",
+        "topic": "coding",
+        "author": "jessjelly"
+      },
+      "details": {
+        "username": "Identifier of the user available on /api/users.",
+        "body": "Text of the article.",
+        "title": "Title of the article.",
+        "topic": "Chosen topic available on /api/topics."
+      }
+    },
+    "exampleResponse": {
+      "article": {
+        "article_id": 100,
+        "title": "Given title",
+        "body": "Example article right here.",
+        "votes": 0,
+        "topic": "coding",
+        "author": "jessjelly",
+        "created_at": "2020-03-15T15:59:13.341Z",
+        "comment_count": "0"
+      }
     }
   },
   "GET /api/articles/{article_id}": {
@@ -57,6 +158,7 @@
       "article": {
         "article_id": 33,
         "title": "Seafood substitutions are increasing",
+        "body": "'SEAFOOD fraud is a serious global problem', begins a recent report from Oceana, an NGO. Reviewing over 200 studies in 55 countries, the report finds that one in five fish sold has been mislabelled. Although fish fraud is common early in the supply chain, most of it comes at the retail level. In 65% of cases, the motivation is economic—slippery restaurateurs frequently serve up cheaper fish than they advertise to cut costs. In America, Oceana has reported instances of tilapia being sold as the more expensive red snapper. Especially brazen fish criminals have invented new types of fish entirely. In Brazil, researchers were puzzled to find markets selling 'douradinha', ' non-existent species. Close inspection found that 60% of such fish were actually 'vulture' catfish, a relatively undesirable dish. Reports in America of catfish being substituted for more expensive fish date back to at least 2002; Oceana’s study suggests that the phenomenon is spreading.",
         "votes": 0,
         "topic": "cooking",
         "author": "weegembump",
@@ -70,7 +172,12 @@
     "queries": {},
     "parameters": { "article_id": "Identifier of the article." },
     "requirements": {
-      "inc_votes": "The value to change the total value of votes by."
+      "format": {
+        "inc_votes": "newVote"
+      },
+      "details": {
+        "inc_votes": "NewVote will indicate how much the votes property in the database should be updated by."
+      }
     },
     "exampleResponse": {
       "article": {
@@ -84,11 +191,20 @@
       }
     }
   },
+  "DELETE /api/articles/{article_id}": {
+    "description": "Removes a given article.",
+    "queries": {},
+    "parameters": {
+      "article_id": "Identifier of the article."
+    }
+  },
   "GET /api/articles/:article_id/comments": {
     "description": "Serves up an array of comments of the given article.",
     "queries": {
       "sort_by": "Sorts by either 'comment_id', 'author', 'article_id', 'votes', or 'created_at'.",
-      "order": "Ascending or descending."
+      "order": "Ascending or descending.",
+      "limit": "Limits the number of responses (defaults to 10).",
+      "p": "Specifies the page at which to start (calculated using limit)."
     },
     "parameters": { "article_id": "Identifier of the article." },
     "exampleResponse": {
@@ -108,8 +224,14 @@
     "queries": {},
     "parameters": { "article_id": "Identifier of the article." },
     "requirements": {
-      "username": "Identifier of the user.",
-      "body": "Test of the comment."
+      "format": {
+        "username": "grumpy19",
+        "body": "Posting a new test comment."
+      },
+      "details": {
+        "username": "Identifier of the user.",
+        "body": "Text of the comment."
+      }
     },
     "exampleResponse": {
       "comment": {
@@ -127,7 +249,12 @@
     "queries": {},
     "parameters": { "comment_id": "Identifier of the article." },
     "requirements": {
-      "inc_votes": "The value to change the total value of votes by."
+      "format": {
+        "inc_votes": "newVote"
+      },
+      "details": {
+        "inc_votes": "NewVote will indicate how much the votes property in the database should be updated by."
+      }
     },
     "exampleResponse": {
       "comment": {
@@ -143,7 +270,7 @@
   "DELETE /api/comments/{comment_id}": {
     "description": "Removes a given comment.",
     "queries": {},
-    "parameters": { "comment_id": "Identifier of the article." }
+    "parameters": { "comment_id": "Identifier of the comment." }
   },
   "GET /api/teapot": {
     "description": "You're a teapot."
